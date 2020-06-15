@@ -6,11 +6,15 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.util.concurrent.TimeUnit;
+
 
 public class ParentTest {
 	static WebDriver driver;
-	static By searchBoxLocator = By.id("navbar-query");
-	static By searchButtonLocator = By.id("navbar-submit-button");
+	static By searchBoxLocator = By.id("suggestion-search");
+	static By searchButtonLocator = By.id("suggestion-search-button");
 
 	public static void setUp() {
 		//System.setProperty("webdriver.chrome.driver", "C:\\automation\\drivers\\chromedriver.exe");  //propiedad explorador chrome		
@@ -20,6 +24,7 @@ public class ParentTest {
 	}
 
 	public static void clickElement(By elementLocator) {
+
 		driver.findElement(elementLocator).click();
 	}
 
@@ -39,11 +44,12 @@ public class ParentTest {
 
 	public static void testMovieSearch(String movieName, String movieStar, String movieYear) {
 
-		inputText(searchBoxLocator, movieName);						
+		inputText(searchBoxLocator, movieName);
+
 		clickElement(searchButtonLocator);
 
-		//Verificar que exista un link de esa pelicula	
-		verifyLinkExists(movieName, movieYear);
+		//Verificar que exista un link de esa pelicula
+
 
 		clickMovieLink(movieName, movieYear);
 
@@ -52,13 +58,17 @@ public class ParentTest {
 	}
 
 
-	private static void clickMovieLink(String movieName, String movieYear) {
+	private static void clickMovieLink(String movieName, String movieYear) {ls
 		String movieLinkXpath = "//td[contains(.,'"+ movieYear +"')]//a[contains(text(), '"+ movieName +"')]";
 		driver.findElement(By.xpath(movieLinkXpath)).click();		
 	}
 
 	private static void verifyLinkExists(String movieName, String movieYear) {
 		WebElement correctColumn = null;
+
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[text()='Results for ']")));
+
 		String movieXpath = "//h3[text() = 'Titles']/following-sibling::table//td";
 		List<WebElement> movieLinks = driver.findElements(By.xpath(movieXpath));
 		for(WebElement we: movieLinks) {
